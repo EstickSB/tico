@@ -1,0 +1,21 @@
+{
+  "name": "tico-backend",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "bun run --watch src/index.ts",
+    "start": "bun run src/index.ts",
+    "db:push": "bunx prisma db push",
+    "db:generate": "bunx prisma generate"
+  },
+  "dependencies": {
+    "elysia": "^1.2.12",
+    "@elysiajs/cors": "^1.2.0",
+    "@prisma/client": "^6.5.0",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.9",
+    "prisma": "^6.5.0",
+    "typescript": "^5.8.2"
+  }
+}

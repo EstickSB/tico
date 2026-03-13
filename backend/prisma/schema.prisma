@@ -1,0 +1,112 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  PASSENGER
+  DRIVER
+  ADMIN
+}
+
+enum DriverStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+enum PlanType {
+  FREE
+  PRO
+  BUSINESS
+}
+
+enum TripStatus {
+  SEARCHING
+  ACCEPTED
+  DRIVER_ARRIVING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id          String   @id @default(cuid())
+  phone       String   @unique
+  name        String?
+  role        Role     @default(PASSENGER)
+  rating      Float    @default(0)
+  ratingCount Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  driver       Driver?
+  tripsAsPassenger Trip[]   @relation("PassengerTrips")
+  tripsAsDriver    Trip[]   @relation("DriverTrips")
+  ratingsGiven     Rating[] @relation("RatingsGiven")
+  ratingsReceived  Rating[] @relation("RatingsReceived")
+}
+
+model Driver {
+  id           String       @id @default(cuid())
+  userId       String       @unique
+  user         User         @relation(fields: [userId], references: [id])
+  licensePlate String
+  licensePhoto String?
+  vehicleBrand String
+  vehicleModel String
+  vehicleColor String
+  status       DriverStatus @default(PENDING)
+  isAvailable  Boolean      @default(false)
+  planType     PlanType     @default(FREE)
+  planExpiresAt DateTime?
+  tripsToday   Int          @default(0)
+  lastTripReset DateTime    @default(now())
+}
+
+model Trip {
+  id             String     @id @default(cuid())
+  passengerId    String
+  passenger      User       @relation("PassengerTrips", fields: [passengerId], references: [id])
+  driverId       String?
+  driver         User?      @relation("DriverTrips", fields: [driverId], references: [id])
+  originLat      Float
+  originLng      Float
+  originAddress  String
+  destLat        Float
+  destLng        Float
+  destAddress    String
+  estimatedPrice Float
+  finalPrice     Float?
+  status         TripStatus @default(SEARCHING)
+  createdAt      DateTime   @default(now())
+  acceptedAt     DateTime?
+  startedAt      DateTime?
+  completedAt    DateTime?
+
+  ratings Rating[]
+}
+
+model Rating {
+  id         String   @id @default(cuid())
+  tripId     String
+  trip       Trip     @relation(fields: [tripId], references: [id])
+  fromUserId String
+  fromUser   User     @relation("RatingsGiven", fields: [fromUserId], references: [id])
+  toUserId   String
+  toUser     User     @relation("RatingsReceived", fields: [toUserId], references: [id])
+  stars      Int
+  createdAt  DateTime @default(now())
+}
+
+model OtpCode {
+  id        String   @id @default(cuid())
+  phone     String
+  code      String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+}

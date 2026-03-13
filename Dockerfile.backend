@@ -1,0 +1,14 @@
+FROM oven/bun:1 AS base
+WORKDIR /app
+
+COPY backend/package.json backend/bun.lock* ./
+RUN rm -rf /root/.bun/install/cache && bun install --frozen-lockfile || bun install
+
+COPY backend/prisma ./prisma
+RUN bunx prisma generate
+
+COPY backend/ .
+
+EXPOSE 3000
+
+CMD ["sh", "-c", "bunx prisma db push --skip-generate && bun run src/index.ts"]
