@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
+import Map, { originIcon, destIcon, driverIcon } from '../../components/Map'
+import { CHICLAYO_CENTER, DEMO_LOCATIONS } from '../../lib/routing'
 
 type Phase = 'pickup' | 'arrived' | 'in_progress' | 'completed'
 
@@ -12,8 +14,42 @@ const phaseConfig: Record<Phase, { label: string; color: string; button: string;
 
 export default function DriverTrip() {
   const [phase, setPhase] = useState<Phase>('pickup')
+  const [progress, setProgress] = useState(0)
   const nav = useNavigate()
   const config = phaseConfig[phase]
+
+  const origin = CHICLAYO_CENTER
+  const dest: [number, number] = DEMO_LOCATIONS['Real Plaza']
+
+  // Simulate movement
+  useEffect(() => {
+    if (phase !== 'pickup' && phase !== 'in_progress') return
+    const target = phase === 'pickup' ? origin : dest
+    const start = phase === 'pickup' ? [-6.7750, -79.8450] as [number, number] : origin
+    setProgress(0)
+    const i = setInterval(() => {
+      setProgress(p => {
+        if (p >= 1) { clearInterval(i); return 1 }
+        return p + 0.03
+      })
+    }, 500)
+    return () => clearInterval(i)
+  }, [phase])
+
+  const driverPos: [number, number] = useMemo(() => {
+    const start = phase === 'pickup' ? [-6.7750, -79.8450] as [number, number] : origin
+    const target = phase === 'pickup' ? origin : dest
+    return [
+      start[0] + (target[0] - start[0]) * progress,
+      start[1] + (target[1] - start[1]) * progress,
+    ]
+  }, [phase, progress])
+
+  const markers = useMemo(() => [
+    { position: origin, icon: originIcon },
+    { position: dest, icon: destIcon },
+    { position: driverPos, icon: driverIcon },
+  ], [driverPos])
 
   const advance = () => {
     if (config.next === 'completed') { nav('/driver'); return }
@@ -37,13 +73,12 @@ export default function DriverTrip() {
       }} />
 
       {/* Map */}
-      <div className="map-placeholder" style={{ flex: 1 }}>
-        <span style={{ zIndex: 1 }}>📍 Navegación en curso</span>
+      <div style={{ flex: 1 }}>
+        <Map center={driverPos} zoom={15} markers={markers} route={[origin, dest]} style={{ height: '100%' }} />
       </div>
 
       {/* Bottom panel */}
       <div style={{ background: 'var(--white)', padding: 16, boxShadow: 'var(--shadow-lg)' }}>
-        {/* Passenger info */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
           <div style={{
             width: 44, height: 44, borderRadius: '50%', background: 'rgba(255,193,7,0.15)',
@@ -61,7 +96,6 @@ export default function DriverTrip() {
           }}>📞</a>
         </div>
 
-        {/* Route info */}
         <div style={{
           display: 'flex', gap: 8, fontSize: 13, marginBottom: 16,
           padding: '12px 0', borderTop: '1px solid var(--gray-100)',

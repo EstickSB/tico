@@ -1,22 +1,52 @@
-import { useEffect } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTrip } from '../../hooks/useTrip'
+import Map, { originIcon, destIcon, driverIcon } from '../../components/Map'
+import { CHICLAYO_CENTER, DEMO_LOCATIONS } from '../../lib/routing'
 
 export default function ActiveTrip() {
   const { id } = useParams()
   const nav = useNavigate()
   const { trip, getTrip } = useTrip()
 
+  const origin = CHICLAYO_CENTER
+  const dest: [number, number] = DEMO_LOCATIONS['Real Plaza']
+  const [driverPos, setDriverPos] = useState<[number, number]>(origin)
+  const [progress, setProgress] = useState(0)
+
   useEffect(() => { if (id) getTrip(id) }, [id])
 
+  // Simulate driver movement
+  useEffect(() => {
+    const i = setInterval(() => {
+      setProgress(p => {
+        if (p >= 1) { clearInterval(i); return 1 }
+        return p + 0.02
+      })
+    }, 500)
+    return () => clearInterval(i)
+  }, [])
+
+  useEffect(() => {
+    setDriverPos([
+      origin[0] + (dest[0] - origin[0]) * progress,
+      origin[1] + (dest[1] - origin[1]) * progress,
+    ])
+  }, [progress])
+
+  const markers = useMemo(() => [
+    { position: origin, icon: originIcon },
+    { position: dest, icon: destIcon },
+    { position: driverPos, icon: driverIcon },
+  ], [driverPos])
+
+  const eta = Math.max(1, Math.round(8 * (1 - progress)))
+
   return (
-    <div style={{ height: '100dvh', position: 'relative' }}>
+    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column' }}>
       {/* Map */}
-      <div className="map-placeholder" style={{ height: '55%' }}>
-        <div style={{ zIndex: 1, textAlign: 'center' }}>
-          <p>📍 Mapa en tiempo real</p>
-          <p style={{ fontSize: 12, marginTop: 4 }}>Simulando ubicación del conductor</p>
-        </div>
+      <div style={{ flex: 1, position: 'relative' }}>
+        <Map center={driverPos} zoom={15} markers={markers} route={[origin, dest]} style={{ height: '100%' }} />
       </div>
 
       {/* ETA bar */}
@@ -27,7 +57,7 @@ export default function ActiveTrip() {
       }}>
         <div>
           <p style={{ fontSize: 12, opacity: 0.7, fontFamily: 'var(--font-display)', textTransform: 'uppercase' }}>Tiempo estimado</p>
-          <p style={{ fontSize: 22, fontWeight: 700, fontFamily: 'var(--font-display)' }}>8 min</p>
+          <p style={{ fontSize: 22, fontWeight: 700, fontFamily: 'var(--font-display)' }}>{eta} min</p>
         </div>
         <div style={{
           background: 'var(--primary)', padding: '6px 14px',
@@ -41,7 +71,7 @@ export default function ActiveTrip() {
       }} />
 
       {/* Driver card */}
-      <div style={{ padding: 16, background: 'var(--white)', flex: 1 }}>
+      <div style={{ padding: 16, background: 'var(--white)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
           <div style={{
             width: 48, height: 48, borderRadius: '50%', background: 'rgba(255,193,7,0.15)',
