@@ -44,6 +44,17 @@ export default function AdminDrivers() {
           ))}
         </div>
 
+        {filtered.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '48px 16px' }}>
+            <div style={{ fontSize: 48, marginBottom: 12 }}>👤</div>
+            <p style={{ fontWeight: 600, fontSize: 16, color: 'var(--secondary)', marginBottom: 4 }}>
+              {filter === 'PENDING' ? 'No hay conductores pendientes' : 'No hay conductores'}
+            </p>
+            <p style={{ fontSize: 14, color: 'var(--gray-400)' }}>
+              {filter === 'PENDING' ? 'Todas las solicitudes han sido revisadas' : 'No se encontraron resultados'}
+            </p>
+          </div>
+        ) : (
         <div className="table-wrap">
           <table>
             <thead>
@@ -86,6 +97,7 @@ export default function AdminDrivers() {
             </tbody>
           </table>
         </div>
+        )}
       </div>
       <BottomNav role="ADMIN" />
     </div>

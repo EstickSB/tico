@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import LoadingSpinner from '../components/LoadingSpinner'
@@ -31,6 +31,19 @@ export default function Login() {
   }
 
   const handleOtpInput = (val: string, index: number) => {
+    // Handle paste of multiple digits
+    if (val.length > 1) {
+      const digits = val.replace(/\D/g, '').slice(0, 4)
+      setCode(digits)
+      if (digits.length === 4) {
+        const last = document.getElementById(`otp-3`)
+        last?.focus()
+      } else {
+        const next = document.getElementById(`otp-${Math.min(digits.length, 3)}`)
+        next?.focus()
+      }
+      return
+    }
     const newCode = code.split('')
     newCode[index] = val
     const joined = newCode.join('').slice(0, 4)
@@ -40,6 +53,13 @@ export default function Login() {
       next?.focus()
     }
   }
+
+  // Auto-submit when 4 digits filled
+  useEffect(() => {
+    if (code.length === 4 && step === 'otp' && !loading) {
+      handleVerify()
+    }
+  }, [code])
 
   return (
     <div style={{
@@ -140,6 +160,11 @@ export default function Login() {
                   maxLength={1}
                   value={code[i] || ''}
                   onChange={e => handleOtpInput(e.target.value.replace(/\D/g, ''), i)}
+                  onPaste={e => {
+                    e.preventDefault()
+                    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 4)
+                    if (pasted) handleOtpInput(pasted, 0)
+                  }}
                   onKeyDown={e => {
                     if (e.key === 'Backspace' && !code[i] && i > 0) {
                       const prev = document.getElementById(`otp-${i - 1}`)

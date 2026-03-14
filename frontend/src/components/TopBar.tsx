@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import UserMenu from './UserMenu'
 
 interface Props {
   title: string
@@ -10,7 +10,6 @@ interface Props {
 
 export default function TopBar({ title, back, right, transparent }: Props) {
   const nav = useNavigate()
-  const { logout } = useAuth()
 
   return (
     <div style={{
@@ -42,16 +41,7 @@ export default function TopBar({ title, back, right, transparent }: Props) {
         {title}
       </h1>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, justifyContent: 'flex-end' }}>
-        {right}
-        {!right && (
-          <button onClick={logout} style={{
-            background: 'none', fontSize: 13, color: 'var(--gray-400)',
-            padding: '6px 10px', borderRadius: 'var(--radius-sm)',
-            transition: 'color 0.2s',
-          }} title="Cerrar sesión">
-            ⏻
-          </button>
-        )}
+        {right || <UserMenu />}
       </div>
     </div>
   )

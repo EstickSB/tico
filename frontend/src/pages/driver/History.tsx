@@ -50,6 +50,13 @@ export default function DriverHistory() {
 
         {/* Trip list */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {filtered.length === 0 && (
+            <div style={{ textAlign: 'center', padding: '48px 16px' }}>
+              <div style={{ fontSize: 48, marginBottom: 12 }}>🚕</div>
+              <p style={{ fontWeight: 600, fontSize: 16, color: 'var(--secondary)', marginBottom: 4 }}>No tienes viajes aún</p>
+              <p style={{ fontSize: 14, color: 'var(--gray-400)' }}>Tus viajes completados aparecerán aquí</p>
+            </div>
+          )}
           {filtered.map(t => (
             <div key={t.id} className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ flex: 1 }}>

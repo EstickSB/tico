@@ -332,6 +332,87 @@ h1, h2, h3 {
   height: 40px;
 }
 
+/* App shell — mobile-first container */
+.app-shell {
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  background: var(--white);
+  position: relative;
+  overflow-x: hidden;
+}
+
+@media (min-width: 431px) {
+  body {
+    background: #E8E8ED;
+  }
+  .app-shell {
+    box-shadow: 0 0 40px rgba(0,0,0,0.12);
+  }
+}
+
+/* Desktop branding panel */
+@media (min-width: 860px) {
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100dvh;
+  }
+  body::before {
+    content: '🚕 Tico';
+    position: fixed;
+    left: calc(50% - 320px);
+    top: 50%;
+    transform: translate(-100%, -50%);
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--gray-400);
+    font-family: var(--font);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  body::after {
+    content: 'Tu taxi en Chiclayo';
+    position: fixed;
+    left: calc(50% - 320px);
+    top: calc(50% + 24px);
+    transform: translate(-100%, -50%);
+    font-size: 14px;
+    color: var(--gray-400);
+    font-family: var(--font);
+    pointer-events: none;
+  }
+}
+
+/* Page transition */
+.page-fade {
+  animation: fadeIn 0.2s ease;
+}
+
+/* Fix maps and absolute positioning inside app-shell */
+.app-shell .leaflet-container {
+  width: 100% !important;
+  max-width: 430px;
+}
+
+/* Bottom nav constrained to app-shell */
+.app-shell nav[style] {
+  max-width: 430px;
+  left: 50% !important;
+  transform: translateX(-50%);
+}
+
+/* Page content consistent gaps */
+.page-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.page-content > .card + .card {
+  margin-top: 0;
+}
+
 .pulse-dot {
   width: 16px;
   height: 16px;

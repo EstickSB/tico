@@ -37,7 +37,7 @@ export default function Waiting() {
   return (
     <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column' }}>
       <div style={{ flex: 1, position: 'relative' }}>
-        <Map center={CHICLAYO_CENTER} zoom={15} markers={markers} style={{ height: '100%' }} />
+        <Map center={CHICLAYO_CENTER} zoom={15} markers={markers} style={{ height: '100%', width: '100%' }} />
 
         <div className="bottom-sheet">
           {!matched ? (

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { useTrip } from '../../hooks/useTrip'
 import Map, { originIcon, destIcon, userIcon } from '../../components/Map'
 import { CHICLAYO_CENTER, DEMO_LOCATIONS, getRoute } from '../../lib/routing'
+import UserMenu from '../../components/UserMenu'
+import LoadingSpinner from '../../components/LoadingSpinner'
 
 export default function Home() {
   const [destination, setDestination] = useState('')
@@ -59,7 +61,7 @@ export default function Home() {
         zoom={14}
         markers={markers}
         route={showPanel ? route : undefined}
-        style={{ height: '100%', position: 'absolute', inset: 0 }}
+        style={{ height: '100%', width: '100%', position: 'absolute', inset: 0 }}
       />
 
       {/* Floating search card */}
@@ -68,8 +70,17 @@ export default function Home() {
       }}>
         <div className="glass" style={{
           borderRadius: 'var(--radius-lg)',
-          boxShadow: 'var(--shadow-lg)', padding: 16,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.12)', padding: 16,
+          border: '1px solid rgba(255,255,255,0.6)',
         }}>
+          {/* Header with branding and user menu */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 20 }}>🚕</span>
+              <span style={{ fontWeight: 800, fontSize: 16, color: 'var(--secondary)' }}>Tico</span>
+            </div>
+            <UserMenu />
+          </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div style={{
               display: 'flex', alignItems: 'center', gap: 10,
@@ -160,8 +171,8 @@ export default function Home() {
               <p style={{ fontWeight: 700, fontSize: 16 }}>{trip.duration || 8} min</p>
             </div>
           </div>
-          <button className="btn btn-primary" onClick={handleRequest} style={{ fontSize: 16, fontWeight: 700 }}>
-            Buscar Taxista
+          <button className="btn btn-primary" onClick={handleRequest} disabled={loading} style={{ fontSize: 16, fontWeight: 700 }}>
+            {loading ? <LoadingSpinner size={20} color="var(--secondary-deep)" /> : 'Buscar Taxista'}
           </button>
           <button className="btn btn-outline" onClick={() => { setShowPanel(false); setRoute(undefined) }} style={{ marginTop: 8 }}>
             Cancelar
