@@ -3,9 +3,9 @@ import TopBar from '../../components/TopBar'
 import BottomNav from '../../components/BottomNav'
 
 const plans = [
-  { name: 'FREE', price: 0, features: ['5 viajes/día', 'Soporte básico', 'Comisión 15%'], color: 'var(--gray-400)' },
-  { name: 'PRO', price: 29.90, features: ['Viajes ilimitados', 'Soporte prioritario', 'Comisión 10%', 'Estadísticas avanzadas'], color: 'var(--primary)' },
-  { name: 'BUSINESS', price: 59.90, features: ['Todo de PRO', 'Comisión 5%', 'Prioridad en solicitudes', 'Reportes mensuales', 'Soporte 24/7'], color: 'var(--success)' },
+  { name: 'FREE', price: 0, features: ['20 viajes/día', 'Sin comisión por viaje', 'Soporte básico'], color: 'var(--gray-400)' },
+  { name: 'PRO', price: 350, features: ['100 viajes/día', 'Sin comisión por viaje', 'Soporte prioritario', 'Estadísticas avanzadas'], color: 'var(--primary)' },
+  { name: 'BUSINESS', price: 500, features: ['Viajes ilimitados', 'Sin comisión por viaje', 'Prioridad en solicitudes', 'Reportes mensuales', 'Soporte 24/7'], color: 'var(--success)' },
 ]
 
 export default function DriverPlan() {
@@ -35,7 +35,7 @@ export default function DriverPlan() {
                   <div style={{ textAlign: 'right' }}>
                     {plan.price > 0 ? (
                       <>
-                        <span style={{ fontSize: 26, fontWeight: 700, fontFamily: 'var(--font-display)' }}>S/ {plan.price.toFixed(2)}</span>
+                        <span style={{ fontSize: 26, fontWeight: 700, fontFamily: 'var(--font-display)' }}>S/ {plan.price % 1 === 0 ? plan.price : plan.price.toFixed(2)}</span>
                         <span style={{ fontSize: 12, color: 'var(--gray-400)' }}>/mes</span>
                       </>
                     ) : (
