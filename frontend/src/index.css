@@ -334,6 +334,7 @@ h1, h2, h3 {
 
 /* App shell — mobile-first container */
 .app-shell {
+  width: 100%;
   max-width: 430px;
   margin: 0 auto;
   min-height: 100dvh;
